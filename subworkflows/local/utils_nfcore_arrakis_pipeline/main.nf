@@ -83,21 +83,10 @@ workflow PIPELINE_INITIALISATION {
     Channel
         .fromSamplesheet("input")
         .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
+            meta, tumorBam, normalBam, bedFile ->
+                return [ meta, tumorBam, normalBam, bedFile]
         }
-        .groupTuple()
-        .map {
-            validateInputSamplesheet(it)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
-        }
+        .map { create_bam_channel(it)}
         .set { ch_samplesheet }
 
     emit:
@@ -153,6 +142,49 @@ workflow PIPELINE_COMPLETION {
 def validateInputParameters() {
     genomeExistsError()
 }
+
+// Function to get list of [ meta, [ tumorBam, tumorBamIndex,  normalBam, normalBamIndex ] ]
+def create_bam_channel(LinkedHashMap row) {
+
+    // add path(s) of the bam files to the meta map
+    def bams = []
+    def tumorBai = "${row.tumorBam}.bai"
+    def normalBai = "${row.normalBam}.bai"
+    def tumorBaiAlt = "${row.tumorBam}".replaceAll('bam$', 'bai')
+    def normalBaiAlt = "${row.normalBam}".replaceAll('bam$', 'bai')
+
+    def foundTumorBai = ""
+    def foundNormalBai = ""
+
+
+    if (file(tumorBai).exists()) {
+        foundTumorBai = tumorBai
+    }
+    else{
+        if(file(tumorBaiAlt).exists()){
+            foundTumorBai = tumorBaiAlt
+        }
+        else{
+        exit 1, "ERROR: Please verify inputs -> Tumor BAI file does not exist!\n${row.tumorBam}"
+        }
+    }
+    if (file(normalBai).exists()) {
+        foundNormalBai = normalBai
+    }
+    else{
+        if(file(normalBaiAlt).exists()){
+            foundNormalBai = normalBaiAlt
+        }
+        else{
+            exit 1, "ERROR: Please verify inputs -> Normal BAI file does not exist!\n${row.normalBam}"
+        }
+    }
+
+
+    bams = [ row.meta, file(row.tumorBam), file(foundTumorBai), file(row.normalBam), file(foundNormalBai), file(row.bedFile) ]
+    return bams
+}
+
 
 //
 // Validate channels from input samplesheet
