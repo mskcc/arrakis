@@ -2,15 +2,13 @@ process GATK_PRINTREADS {
     tag "$meta.id"
     label 'process_medium'
 
-    scratch true
-
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://mskcc/gatk:3.3-0':
         'docker.io/mskcc/gatk:3.3-0' }"
 
     input:
 
-    tuple val(meta), path(bam)
+    tuple val(meta), path(bam), path(bam_index)
     tuple val(meta2), path(fasta), path(fai)
     tuple val(meta3), path(bqsr)
 
@@ -30,7 +28,7 @@ process GATK_PRINTREADS {
         -Xms${task.memory.toMega()/4}m \
         -Xmx${task.memory.toGiga()}g \
         -XX:-UseGCOverheadLimit \
-        -Djava.io.tmpdir=${task.scratch} \
+        -Djava.io.tmpdir=./tmp \
         -jar \
         /usr/bin/gatk.jar \
         -T \
@@ -38,7 +36,7 @@ process GATK_PRINTREADS {
         --input_file \
         ${bam} \
         --reference_sequence \
-        ${fasta}
+        ${fasta} \
         --num_cpu_threads_per_data_thread \
         ${task.cpus * 2} \
         --emit_original_quals \
@@ -47,7 +45,7 @@ process GATK_PRINTREADS {
         --baq \
         RECALCULATE \
         --out \
-        ${bam.basename}.printreads.bam
+        ${bam.baseName}.printreads.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
