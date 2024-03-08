@@ -8,7 +8,7 @@ process ABRA {
         'docker://mskcc/abra:2.17':
         'docker.io/mskcc/abra:2.17' }"
 
-    input:
+    publishDir "${params.outdir}/${meta.id}/", pattern: "*", mode: params.publish_dir_mode
 
     input:
     tuple val(meta),  path(tumor), path(tumor_index), path(normal), path(normal_index), path(targets)
