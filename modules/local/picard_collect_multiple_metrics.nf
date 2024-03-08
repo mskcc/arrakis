@@ -6,6 +6,7 @@ process PICARD_COLLECT_MULTIPLE_METRICS {
         'docker://mskcc/picard:2.9':
         'docker.io/mskcc/picard:2.9' }"
 
+    publishDir "${params.outdir}/${meta.id}/", pattern: "*", mode: params.publish_dir_mode
 
     input:
 
