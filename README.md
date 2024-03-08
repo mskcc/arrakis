@@ -107,7 +107,7 @@ The output of the pipeline will be organized by the pairId provided. For the exa
 
 ## Credits
 
-mskcc/arrakis was originally written by Nikhil Kumar.
+mskcc/arrakis was originally written by Nikhil Kumar ([@nikhil](https://github.com/nikhil)).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
