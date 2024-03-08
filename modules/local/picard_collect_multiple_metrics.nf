@@ -6,16 +6,15 @@ process PICARD_COLLECT_MULTIPLE_METRICS {
         'docker://mskcc/picard:2.9':
         'docker.io/mskcc/picard:2.9' }"
 
-    scratch true
 
     input:
 
-    tuple val(meta), path(bam)
+    tuple val(meta), path(bam), path(bam_index)
     tuple val(meta2), path(fasta), path(fai)
 
     output:
-    tuple val(meta), path("*.quality_by_cycle_metrics")              , emit: qual_file
-    tuple val(meta), path("*.quality_by_cycle.pdf")                  , emit: qual_hist
+    tuple val(meta), path("*.quality_by_cycle_metrics")              , emit: qual_metrics
+    tuple val(meta), path("*.quality_by_cycle.pdf")                  , emit: qual_pdf
     path "versions.yml"                                              , emit: versions
 
     when:
@@ -30,7 +29,7 @@ process PICARD_COLLECT_MULTIPLE_METRICS {
         -Xms${task.memory.toMega()/4}m \
         -Xmx${task.memory.toGiga()}g \
         -XX:-UseGCOverheadLimit \
-        -Djava.io.tmpdir=${task.scratch} \
+        -Djava.io.tmpdir=./tmp \
         -jar \
         /usr/bin/picard-tools/picard.jar \
         CollectMultipleMetrics \
@@ -39,7 +38,7 @@ process PICARD_COLLECT_MULTIPLE_METRICS {
         PROGRAM=null \
         PROGRAM=MeanQualityByCycle \
         VALIDATION_STRINGENCY=SILENT \
-        OUTPUT=${bam.basename}.qmetrics
+        OUTPUT=${bam.baseName}.qmetrics
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
