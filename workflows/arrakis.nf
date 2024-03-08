@@ -8,7 +8,7 @@ include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_arrakis_pipeline'
-include ( REALLIGNMENT ) from '../subworkflows/local/reallignment'
+include { REALLIGNMENT }           from '../subworkflows/local/reallignment'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,6 +27,8 @@ workflow ARRAKIS {
     ch_multiqc_files = Channel.empty()
 
     ref_index_list = []
+    known_site_list = []
+    known_site_index_list = []
     for(single_genome_ref in params.fasta_index){
         ref_index_list.add(file(single_genome_ref))
     }
