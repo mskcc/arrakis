@@ -56,7 +56,13 @@ workflow MSKCC_ARRAKIS {
     )
 
     emit:
-    multiqc_report = ARRAKIS.out.multiqc_report // channel: /path/to/multiqc_report.html
+    versions                 = ARRAKIS.out.versions
+    normal_qual_metrics      = ARRAKIS.out.normal_qual_metrics
+    normal_qual_pdf          = ARRAKIS.out.normal_qual_pdf
+    tumor_qual_metrics       = ARRAKIS.out.tumor_qual_metrics
+    tumor_qual_pdf           = ARRAKIS.out.tumor_qual_pdf
+    normal_bam               = ARRAKIS.out.normal_bam
+    tumor_bam                = ARRAKIS.out.tumor_bam
 
 }
 /*
@@ -98,8 +104,7 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
-        MSKCC_ARRAKIS.out.multiqc_report
+        params.hook_url
     )
 }
 
