@@ -32,8 +32,6 @@ foo_sample,foo_tumor.rg.md.bam,foo_normal.rg.md.bam,IMPACT505,MATCHED,foo_tumor.
 bar_sample,bar_tumor.rg.md.bam,bar_normal.rg.md.bam,IMPACT505,MATCHED,bar_tumor.bar_normal.fci.bed
 ```
 
--->
-
 Now, you can run the pipeline using:
 
 <!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
@@ -46,7 +44,7 @@ nextflow run mskcc/arrakis \
 ```
 
 > [!NOTE]
-> You must include test_juno as your profile for the workflow to run properly
+> You must include `test_juno` as your profile for the workflow to run properly
 
 The `test_juno` parameter file does not need to be modified if you are using `grch_37` and do no want to modify the `known_sites` used by BQSR.
 
