@@ -6,6 +6,8 @@ process GATK_BQSR {
         'docker://mskcc/gatk:3.3-0':
         'docker.io/mskcc/gatk:3.3-0' }"
 
+    publishDir "${params.outdir}/${meta.id}/", pattern: "*", mode: params.publish_dir_mode
+
     input:
 
     tuple val(meta), path(tumor_bam), path(tumor_bam_index), path(normal_bam), path(normal_bam_index)
