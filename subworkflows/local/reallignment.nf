@@ -1,8 +1,8 @@
 include { ABRA } from '../../modules/local/abra'
 include { GATK_BQSR } from '../../modules/local/gatk_bqsr'
-include { GATK_PRINTREADS as normal_printreads; GATK_PRINTREADS as tumor_printreads; } from '../../modules/local/gatk_printreads'
-include { PICARD_COLLECT_MULTIPLE_METRICS as normal_multiple_metrcis; PICARD_COLLECT_MULTIPLE_METRICS as tumor_multiple_metrics } from '../../modules/local/picard_collect_multiple_metrics'
-include { PICARD_INDEX as normal_index; PICARD_INDEX as tumor_index} from '../../modules/local/picard_index'
+include { GATK_PRINTREADS as normal_printreads; GATK_PRINTREADS as tumor_printreads } from '../../modules/local/gatk_printreads'
+include { PICARD_COLLECT_MULTIPLE_METRICS as normal_multiple_metrics; PICARD_COLLECT_MULTIPLE_METRICS as tumor_multiple_metrics } from '../../modules/local/picard_collect_multiple_metrics'
+include { PICARD_INDEX as normal_index; PICARD_INDEX as tumor_index } from '../../modules/local/picard_index'
 
 workflow REALLIGNMENT {
 
@@ -30,18 +30,18 @@ workflow REALLIGNMENT {
     }
 
     tumor_index(
-        tumor_bams,
+        tumor_bams
     )
 
-    ch_versions = ch_versions.mix(normal_index.out.versions)
+    ch_versions = ch_versions.mix(tumor_index.out.versions)
 
     normal_index(
         normal_bams
     )
 
-    ch_versions = ch_versions.mix(tumor_index.out.versions)
+    ch_versions = ch_versions.mix(normal_index.out.versions)
 
-    ch_indexed_bams = tumor_index.out.bam.join(normal_index.out.bam)
+    ch_indexed_bams = normal_index.out.bam.join(tumor_index.out.bam)
 
     GATK_BQSR(
         ch_indexed_bams,
@@ -53,7 +53,7 @@ workflow REALLIGNMENT {
 
     tumor_printreads(
         tumor_index.out.bam,
-        ch_fasta
+        ch_fasta,
         GATK_BQSR.out.recal_matrix
 
     )
@@ -69,7 +69,7 @@ workflow REALLIGNMENT {
 
     normal_printreads(
         normal_index.out.bam,
-        ch_fasta
+        ch_fasta,
         GATK_BQSR.out.recal_matrix
 
     )
@@ -81,7 +81,7 @@ workflow REALLIGNMENT {
         ch_fasta
     )
 
-    ch_versions = ch_versions.mix(normal_multiple_metrcis.out.versions)
+    ch_versions = ch_versions.mix(normal_multiple_metrics.out.versions)
 
 
     emit:
