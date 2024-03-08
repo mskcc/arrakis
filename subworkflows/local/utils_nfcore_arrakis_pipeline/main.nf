@@ -142,15 +142,16 @@ def validateInputParameters() {
     genomeExistsError()
 }
 
-// Function to get list of [ meta, [ tumorBam, tumorBamIndex,  normalBam, normalBamIndex ] ]
-def create_bam_channel(LinkedHashMap row) {
+// Function to get list of [ meta, tumorBam, tumorBamIndex,  normalBam, normalBamIndex ]
+def create_bam_channel(input) {
 
     // add path(s) of the bam files to the meta map
+    def (meta,tumorBam, normalBam, bedFile ) = input[0..3]
     def bams = []
-    def tumorBai = "${row.tumorBam}.bai"
-    def normalBai = "${row.normalBam}.bai"
-    def tumorBaiAlt = "${row.tumorBam}".replaceAll('bam$', 'bai')
-    def normalBaiAlt = "${row.normalBam}".replaceAll('bam$', 'bai')
+    def tumorBai = "${tumorBam}.bai"
+    def normalBai = "${normalBam}.bai"
+    def tumorBaiAlt = "${tumorBam}".replaceAll('bam$', 'bai')
+    def normalBaiAlt = "${normalBam}".replaceAll('bam$', 'bai')
 
     def foundTumorBai = ""
     def foundNormalBai = ""
@@ -180,7 +181,7 @@ def create_bam_channel(LinkedHashMap row) {
     }
 
 
-    bams = [ row.meta, file(row.tumorBam), file(foundTumorBai), file(row.normalBam), file(foundNormalBai), file(row.bedFile) ]
+    bams = [ meta, file(tumorBam), file(foundTumorBai), file(normalBam), file(foundNormalBai), file(bedFile) ]
     return bams
 }
 
