@@ -74,6 +74,7 @@ workflow ARRAKIS {
     tumor_qual_pdf           = REALLIGNMENT.out.tumor_qual_pdf
     normal_bam               = REALLIGNMENT.out.normal_bam
     tumor_bam                = REALLIGNMENT.out.tumor_bam
+    samplesheet              = REALLIGNMENT.out.samplesheet
 }
 
 /*

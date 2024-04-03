@@ -56,13 +56,14 @@ workflow MSKCC_ARRAKIS {
     )
 
     emit:
-    versions                 = ARRAKIS.out.versions
-    normal_qual_metrics      = ARRAKIS.out.normal_qual_metrics
-    normal_qual_pdf          = ARRAKIS.out.normal_qual_pdf
-    tumor_qual_metrics       = ARRAKIS.out.tumor_qual_metrics
-    tumor_qual_pdf           = ARRAKIS.out.tumor_qual_pdf
-    normal_bam               = ARRAKIS.out.normal_bam
-    tumor_bam                = ARRAKIS.out.tumor_bam
+    versions                  = ARRAKIS.out.versions
+    normal_qual_metrics       = ARRAKIS.out.normal_qual_metrics
+    normal_qual_pdf           = ARRAKIS.out.normal_qual_pdf
+    tumor_qual_metrics        = ARRAKIS.out.tumor_qual_metrics
+    tumor_qual_pdf            = ARRAKIS.out.tumor_qual_pdf
+    normal_bam                = ARRAKIS.out.normal_bam
+    tumor_bam                 = ARRAKIS.out.tumor_bam
+    realignment_samplesheet   = ARRAKIS.out.samplesheet
 
 }
 /*
