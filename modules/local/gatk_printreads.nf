@@ -14,8 +14,10 @@ process GATK_PRINTREADS {
     tuple val(meta2), path(fasta), path(fai)
     tuple val(meta3), path(bqsr)
 
+
     output:
     tuple val(meta), path("*.printreads.bam"), path("*.bai")      , emit: bam
+    tuple val(meta), val ("${params.outdir}/${meta.id}")          , emit: published_path
     path "versions.yml"                                           , emit: versions
 
     when:
