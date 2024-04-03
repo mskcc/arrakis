@@ -3,6 +3,7 @@ include { GATK_BQSR } from '../../modules/local/gatk_bqsr'
 include { GATK_PRINTREADS as normal_printreads; GATK_PRINTREADS as tumor_printreads } from '../../modules/local/gatk_printreads'
 include { PICARD_COLLECT_MULTIPLE_METRICS as normal_multiple_metrics; PICARD_COLLECT_MULTIPLE_METRICS as tumor_multiple_metrics } from '../../modules/local/picard_collect_multiple_metrics'
 include { PICARD_INDEX as normal_index; PICARD_INDEX as tumor_index } from '../../modules/local/picard_index'
+include { GENERATE_DOWNSTREAM_SAMPLESHEET } from '../../modules/local/generate_downstream_samplesheet'
 
 workflow REALLIGNMENT {
 
@@ -83,6 +84,9 @@ workflow REALLIGNMENT {
 
     ch_versions = ch_versions.mix(normal_multiple_metrics.out.versions)
 
+    ch_samplesheet = create_samplesheet(tumor_printreads.out.bam,normal_printreads.out.bam,normal_printreads.out.published_path)
+
+    GENERATE_DOWNSTREAM_SAMPLESHEET(ch_samplesheet)
 
     emit:
 
@@ -92,6 +96,31 @@ workflow REALLIGNMENT {
     tumor_qual_pdf = tumor_multiple_metrics.out.qual_pdf
     normal_bam = normal_printreads.out.bam
     tumor_bam = tumor_printreads.out.bam
+    samplesheet = GENERATE_DOWNSTREAM_SAMPLESHEET.out.samplesheet
     versions = ch_versions                                // channel: [ versions.yml ]
 }
 
+def create_samplesheet(tumor, normal, published_path) {
+    tumor_channel = tumor
+        .map{
+            new Tuple(it[0].id,it)
+            }
+    normal_channel = normal
+        .map{
+            new Tuple(it[0].id,it)
+            }
+    path_channel = published_path
+        .map{
+            new Tuple(it[0].id,it)
+            }
+    mergedWithKey = tumor_channel
+        .join(normal_channel)
+        .join(path_channel)
+    merged = mergedWithKey
+        .map{
+            "${it[1][0].id},${it[3][1]}/${it[1][1].getName()},${it[3][1]}/${it[2][1].getName()},${it[1][0].assay},${it[1][0].normalType}"
+        }
+        .toList()
+    return merged
+
+}
