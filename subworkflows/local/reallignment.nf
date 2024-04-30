@@ -4,6 +4,7 @@ include { GATK_PRINTREADS as normal_printreads; GATK_PRINTREADS as tumor_printre
 include { PICARD_COLLECT_MULTIPLE_METRICS as normal_multiple_metrics; PICARD_COLLECT_MULTIPLE_METRICS as tumor_multiple_metrics } from '../../modules/local/picard_collect_multiple_metrics'
 include { PICARD_INDEX as normal_index; PICARD_INDEX as tumor_index } from '../../modules/local/picard_index'
 include { GENERATE_DOWNSTREAM_SAMPLESHEET } from '../../modules/local/generate_downstream_samplesheet'
+include { GENERATE_PUBLISHED_PATH as normal_published_path; GENERATE_PUBLISHED_PATH as tumor_published_path; } from '../../modules/local/get_published_path'
 
 workflow REALLIGNMENT {
 
@@ -84,7 +85,18 @@ workflow REALLIGNMENT {
 
     ch_versions = ch_versions.mix(normal_multiple_metrics.out.versions)
 
-    ch_samplesheet = create_samplesheet(tumor_printreads.out.bam,normal_printreads.out.bam,normal_printreads.out.published_path)
+    normal_published_path(
+        normal_printreads.out.bam,
+        normal_printreads.out.published_path
+
+    )
+
+    tumor_published_path(
+        tumor_printreads.out.bam,
+        tumor_printreads.out.published_path
+    )
+
+    ch_samplesheet = create_samplesheet(tumor_published_path.out.full_path,normal_published_path.out.full_path)
 
     GENERATE_DOWNSTREAM_SAMPLESHEET(ch_samplesheet)
 
@@ -100,7 +112,7 @@ workflow REALLIGNMENT {
     versions = ch_versions                                // channel: [ versions.yml ]
 }
 
-def create_samplesheet(tumor, normal, published_path) {
+def create_samplesheet(tumor, normal) {
     tumor_channel = tumor
         .map{
             new Tuple(it[0].id,it)
@@ -109,16 +121,11 @@ def create_samplesheet(tumor, normal, published_path) {
         .map{
             new Tuple(it[0].id,it)
             }
-    path_channel = published_path
-        .map{
-            new Tuple(it[0].id,it)
-            }
     mergedWithKey = tumor_channel
         .join(normal_channel)
-        .join(path_channel)
     merged = mergedWithKey
         .map{
-            "${it[1][0].id},${it[3][1]}/${it[1][1].getName()},${it[3][1]}/${it[2][1].getName()},${it[1][0].assay},${it[1][0].normalType}"
+            "${it[1][0].id},${it[1][1]},${it[2][1]},${it[1][0].assay},${it[1][0].normalType}"
         }
         .toList()
     return merged
