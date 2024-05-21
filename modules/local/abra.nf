@@ -8,7 +8,7 @@ process ABRA {
         'docker://mskcc/abra:2.17':
         'docker.io/mskcc/abra:2.17' }"
 
-    publishDir "${params.outdir}/${meta.id}/", pattern: "*", mode: params.publish_dir_mode
+    publishDir "${params.outdir}/${meta.id}/", pattern: "*.bam", mode: params.publish_dir_mode
 
     input:
     tuple val(meta),  path(tumor), path(tumor_index), path(normal), path(normal_index), path(targets)
@@ -27,12 +27,12 @@ process ABRA {
     mkdir ./tmp
     java \
         -Xms${task.memory.toMega()/4}m \
-        -Xmx${task.memory.toGiga()}g \
+        -Xmx90g \
         -jar \
         /usr/bin/abra.jar \
         --tmpdir \
         ./tmp \
-        --threads ${task.cpus * 2} \
+        --threads 16 \
         --ref ${fasta} \
         --targets ${targets} \
         --out ${tumor.baseName}.abra.bam,${normal.baseName}.abra.bam \

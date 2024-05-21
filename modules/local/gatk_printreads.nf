@@ -6,7 +6,8 @@ process GATK_PRINTREADS {
         'docker://mskcc/gatk:3.3-0':
         'docker.io/mskcc/gatk:3.3-0' }"
 
-    publishDir "${params.outdir}/${meta.id}/", pattern: "*", mode: params.publish_dir_mode
+    publishDir "${params.outdir}/${meta.id}/", pattern: "*.printreads.bam", mode: params.publish_dir_mode
+    publishDir "${params.outdir}/${meta.id}/", pattern: "*.bai", mode: params.publish_dir_mode
 
     input:
 
