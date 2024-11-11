@@ -12,6 +12,8 @@
 
 **mskcc/arrakis** is a bioinformatics pipeline that performs reallignment and Base Quality Score Recalibration on bams.
 
+![Arrakis graph](docs/images/Arrakis.png)
+
 1. Reallignment ([`ABRA`](https://github.com/mozack/abra2))
 2. Base Quality Score Recalibration ([`GATK_BQSR`](https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR))
 3. PrintReads ([`GATK_PrintReads`](https://gatk.broadinstitute.org/hc/en-us/articles/360036883571-PrintReads))
