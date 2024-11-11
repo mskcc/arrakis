@@ -40,7 +40,7 @@ Now, you can run the pipeline using:
 
 ```bash
 nextflow run mskcc/arrakis \
-   -profile <docker/singularity/.../institute>,test_juno \
+   -profile singularity,test_juno \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
